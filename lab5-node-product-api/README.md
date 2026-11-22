@@ -47,7 +47,7 @@ cd backend-labs
 Si le dépôt existe déjà sur ton ordinateur, mets-le à jour :
 
 ```powershell
-cd chemin\vers\backend-labs
+Set-Location "$HOME\.copilot\repos\backend-labs"
 git pull
 ```
 
@@ -62,7 +62,7 @@ lab5-node-product-api
 Depuis la racine du dépôt, ouvre le dossier du laboratoire :
 
 ```powershell
-cd lab5-node-product-api
+Set-Location .\lab5-node-product-api
 npm install
 ```
 
@@ -214,19 +214,19 @@ curl.exe http://localhost:3000/api/products/1
 ### Créer un produit
 
 ```powershell
-curl.exe -X POST http://localhost:3000/api/products -H "Content-Type: application/json" -d '{\"name\":\"Tapis\",\"price\":10,\"stock\":5}'
+curl.exe -X POST http://localhost:3000/api/products -H "Content-Type: application/json" -d '{"name":"Tapis","price":10,"stock":5}'
 ```
 
 ### Remplacer complètement le produit 1
 
 ```powershell
-curl.exe -X PUT http://localhost:3000/api/products/1 -H "Content-Type: application/json" -d '{\"name\":\"Clavier Gamer\",\"price\":80,\"stock\":10}'
+curl.exe -X PUT http://localhost:3000/api/products/1 -H "Content-Type: application/json" -d '{"name":"Clavier Gamer","price":80,"stock":10}'
 ```
 
 ### Modifier seulement le stock du produit 1
 
 ```powershell
-curl.exe -X PATCH http://localhost:3000/api/products/1 -H "Content-Type: application/json" -d '{\"stock\":20}'
+curl.exe -X PATCH http://localhost:3000/api/products/1 -H "Content-Type: application/json" -d '{"stock":20}'
 ```
 
 ### Supprimer le produit 3
@@ -256,7 +256,7 @@ Réponse attendue : `404 Not Found`.
 ### Corps invalide
 
 ```powershell
-curl.exe -i -X POST http://localhost:3000/api/products -H "Content-Type: application/json" -d '{\"name\":\"\",\"price\":-1,\"stock\":0}'
+curl.exe -i -X POST http://localhost:3000/api/products -H "Content-Type: application/json" -d '{"name":"","price":-1,"stock":0}'
 ```
 
 Réponse attendue : `400 Bad Request` avec les détails des champs invalides.
@@ -360,3 +360,76 @@ C'est normal pour le LAB5 : le repository utilise un tableau JavaScript en mémo
 ## Résultat attendu
 
 À la fin du LAB5, tu disposes d'une API Node.js exécutable, d'une structure modulaire, d'une validation robuste, d'une gestion centralisée des erreurs et d'une documentation Swagger interactive. Tu peux présenter directement l'API, les tests, la collection Postman et cette documentation sur GitHub.
+
+## Accéder au projet local et le lancer avec PowerShell
+
+Sur cet ordinateur, le dossier est :
+
+```text
+C:\Users\monsi\.copilot\repos\backend-labs\lab5-node-product-api
+```
+
+Ouvre PowerShell, mets le dépôt à jour, entre dans le LAB5 et installe les dépendances :
+
+```powershell
+Set-Location "$HOME\.copilot\repos\backend-labs"
+git pull
+Set-Location .\lab5-node-product-api
+Get-Location
+npm ci
+```
+
+Le chemin affiché doit finir par `backend-labs\lab5-node-product-api`. Si tu n'as pas le dépôt localement, clone-le :
+
+```powershell
+Set-Location $HOME
+git clone https://github.com/IguidMnsf/backend-labs.git
+Set-Location .\backend-labs\lab5-node-product-api
+npm ci
+```
+
+Vérifie Node.js et npm, puis démarre le serveur :
+
+```powershell
+node --version
+npm --version
+npm run dev
+```
+
+Garde le terminal ouvert. Quand le message du serveur apparaît, essaie `http://localhost:3000/api/products` dans ton navigateur. Pour arrêter le serveur, appuie sur `Ctrl+C`.
+
+## Postman expliqué pas à pas
+
+Postman envoie une requête au serveur qui tourne dans le terminal. Il ne lance pas `npm run dev`.
+
+1. Ouvre Postman Desktop, clique **Import** → **Files**.
+2. Importe `C:\Users\monsi\.copilot\repos\backend-labs\lab5-node-product-api\postman\LAB5-Product-API.postman_collection.json`.
+3. Dans **Collections**, ouvre **LAB5 - API Produits Node.js Express** et vérifie que `baseUrl` vaut `http://localhost:3000`.
+4. Dans un terminal PowerShell séparé, démarre `npm run dev` et laisse-le ouvert.
+5. Dans Postman, ouvre **1. Vérifier le serveur**, puis clique **Send**. Le résultat attendu est `200 OK`.
+6. Ouvre **3. Créer un produit** et clique **Send**. Vérifie `201 Created` et le produit JSON dans l'onglet **Body**. L'identifiant est enregistré automatiquement.
+7. Envoie ensuite les requêtes de liste, lecture, PUT et PATCH. Les onglets **Body** et **Test Results** montrent respectivement la réponse et les assertions.
+8. Les requêtes d'erreur peuvent s'exécuter ensuite. Envoie **10. Supprimer le produit créé** tout à la fin.
+9. Pour exécuter toutes les requêtes dans l'ordre, clique **Run** sur la collection.
+
+`localhost` signifie « mon ordinateur » : cette URL ne fonctionne que quand le serveur est démarré localement. Si Postman Web ne peut pas accéder à cette adresse, choisis l'agent Desktop/local ou utilise l'application Postman Desktop.
+
+## Captures d'écran pour le professeur
+
+Appuie sur `Win + Shift + S`, sélectionne la zone, clique la notification de capture puis **Enregistrer sous**. Enregistre les images, par exemple dans `Documents\Captures-Labs\LAB5`.
+
+**Captures en local :**
+
+1. PowerShell dans `lab5-node-product-api` avec le serveur en cours d'exécution.
+2. Postman sur **1. Vérifier le serveur**, avec `localhost:3000` et `200 OK`.
+3. Postman sur **3. Créer un produit**, avec `201 Created` et le JSON visible.
+4. Swagger dans le navigateur à `http://localhost:3000/api-docs`.
+5. Facultatif : PowerShell après `npm test` avec tous les tests réussis.
+
+**Captures du projet publié sur GitHub :**
+
+1. Ouvre [les fichiers LAB5 sur GitHub](https://github.com/IguidMnsf/backend-labs/tree/main/lab5-node-product-api).
+2. Capture le README et la liste des fichiers du dossier.
+3. Dans **Actions**, ouvre un run récent et capture le job `lab5-node` terminé avec succès.
+
+La publication GitHub et la réussite des tests ne mettent pas l'API en ligne. L'API est exécutée sur ton PC et utilise `localhost:3000`.
