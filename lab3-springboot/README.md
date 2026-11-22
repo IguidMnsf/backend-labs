@@ -35,27 +35,32 @@ mvn -version
 
 La sortie de Java doit indiquer la version 21. Si `mvn` n’est pas reconnu, installe Apache Maven ou utilise Maven intégré à IntelliJ IDEA.
 
-## 2. Télécharger le dépôt et entrer dans le dossier du LAB3
-
-Pour télécharger les TP1, LAB2 et LAB5 en même temps :
+Si `java -version` affiche Java 8 sur Windows et que `winget` est disponible, installe Java 21 et Maven :
 
 ```powershell
-cd $HOME
-git clone https://github.com/IguidMnsf/backend-labs.git
-cd backend-labs
+winget install --id EclipseAdoptium.Temurin.21.JDK -e
+winget install --id Apache.Maven -e
 ```
 
-Si tu as déjà le dépôt localement :
+Ferme PowerShell, ouvre une nouvelle fenêtre, puis vérifie les versions avec `java -version` et `mvn -version`. Si Java 8 est encore sélectionné, configure le `PATH` Windows pour placer le JDK 21 avant l'ancienne version.
+
+## 2. Accéder au dépôt local et entrer dans le LAB3
+
+Sur cet ordinateur, le dépôt local est `C:\Users\monsi\.copilot\repos\backend-labs`. Mets-le à jour puis entre dans le projet :
 
 ```powershell
-cd $HOME\backend-labs
+Set-Location "$HOME\.copilot\repos\backend-labs"
 git pull
+Set-Location .\lab3-springboot
+Get-Location
 ```
 
-Puis va dans le projet Spring Boot :
+Le dernier chemin doit finir par `backend-labs\lab3-springboot`. Si tu n'as pas encore téléchargé le dépôt, utilise plutôt :
 
 ```powershell
-cd lab3-springboot
+Set-Location $HOME
+git clone https://github.com/IguidMnsf/backend-labs.git
+Set-Location .\backend-labs\lab3-springboot
 ```
 
 **Important :** toutes les commandes Maven et Docker Compose ci-dessous sont à lancer depuis `backend-labs\lab3-springboot`.
@@ -63,6 +68,8 @@ cd lab3-springboot
 ## 3. Installer MySQL
 
 ### Option A — Docker Compose (recommandée)
+
+Ouvre d'abord l'application **Docker Desktop** et attends que son moteur indique qu'il est démarré.
 
 Démarre MySQL :
 
@@ -192,15 +199,22 @@ curl.exe -i -X POST http://localhost:8080/api/orders -H "Content-Type: applicati
 
 La réponse détaille les lignes de commande, le prix unitaire mémorisé et le total. La commande et ses lignes sont créées dans une seule transaction. Le prix de la ligne est copié depuis le produit au moment de la commande afin de préserver le prix d’achat historique.
 
-## 7. Tester avec Postman
+## 7. Utiliser Postman, pas à pas
 
-1. Démarre MySQL et l’API comme indiqué plus haut.
-2. Dans Postman, clique **Import**.
-3. Importe `postman/LAB3-API.postman_collection.json`.
-4. Vérifie la variable `baseUrl` : `http://localhost:8080`.
-5. Exécute les requêtes dans l’ordre : créer catégorie, créer produit, lister/lire/rechercher, modifier, créer commande, lire commande.
-6. La collection mémorise automatiquement les identifiants générés.
-7. Les requêtes de validation et de conflits peuvent être lancées ensuite.
+Postman envoie les requêtes et affiche les réponses ; il ne démarre ni MySQL ni Spring Boot. Les deux services doivent déjà fonctionner.
+
+1. Installe et ouvre **Postman Desktop**, recommandé pour accéder à `localhost`.
+2. Clique **Import** → **Files**, puis importe `C:\Users\monsi\.copilot\repos\backend-labs\lab3-springboot\postman\LAB3-API.postman_collection.json`.
+3. Dans **Collections**, ouvre **LAB3 - API Produits Spring Data JPA**.
+4. Vérifie que le terminal MySQL Docker et le terminal `mvn spring-boot:run` sont encore ouverts.
+5. Ouvre **1. Créer une catégorie**, clique **Send**, et vérifie le statut `201 Created`.
+6. Continue avec les requêtes dans l'ordre : créer le produit, pagination, lecture, recherche, produits de la catégorie, mise à jour, création d'une commande et lecture de la commande.
+7. Pour chaque réponse, le statut HTTP apparaît en haut de la réponse et le JSON dans **Body**. **Test Results** affiche les vérifications automatiques.
+8. Termine par les requêtes de données invalides et de suppression d'un produit commandé. Le statut `409 Conflict` de cette dernière est attendu.
+
+L'adresse `http://localhost:8080` veut dire « cette API sur mon ordinateur », pas une adresse GitHub. Les scripts de Postman mémorisent les identifiants créés : ne remplace pas les identifiants par des nombres devinés.
+
+Si Postman n'arrive pas à joindre l'API, vérifie que Spring Boot affiche son message de démarrage et ouvre `http://localhost:8080/api/products` dans ton navigateur. En cas d'utilisation de Postman Web, sélectionne l'agent Desktop/local ou utilise l'application Desktop.
 
 L’identifiant généré dépend des données déjà présentes : les scripts Postman le capturent au lieu de supposer qu’il vaut toujours `1`.
 
@@ -214,7 +228,29 @@ mvn test
 
 Les tests couvrent les relations catégorie-produit, la pagination, la recherche, la mise à jour, les commandes transactionnelles, la validation et les erreurs `404`/`409`.
 
-## 9. Données d’exemple SQL
+## 9. Captures d'écran pour le professeur
+
+Appuie sur `Win + Shift + S`, sélectionne la zone, clique la notification de capture puis **Enregistrer sous**. Enregistre les images, par exemple dans `Documents\Captures-Labs\LAB3`.
+
+**Captures en local :**
+
+1. PowerShell avec `docker compose ps`, montrant MySQL démarré.
+2. Le terminal `mvn spring-boot:run` après le démarrage réussi de Spring Boot.
+3. Postman sur la création du produit : `localhost:8080`, statut `201 Created` et JSON avec catégorie.
+4. Postman sur la création/lecture d'une commande, avec ses lignes et le total visibles.
+5. Postman sur la requête de suppression protégée, avec `409 Conflict` et son test réussi.
+6. Facultatif : PowerShell après `mvn test`, avec `BUILD SUCCESS`.
+
+**Captures du projet publié sur GitHub :**
+
+1. Ouvre [les fichiers LAB3 sur GitHub](https://github.com/IguidMnsf/backend-labs/tree/main/lab3-springboot) et capture le dossier.
+2. Capture le README affiché par GitHub.
+3. Dans **Actions**, ouvre un run récent et capture le job `lab3-spring-jpa` terminé avec succès.
+4. Facultatif : affiche la collection Postman ou `pom.xml` sur GitHub.
+
+GitHub héberge ici le code et exécute les tests automatiques. L'API du LAB3 n'est pas déployée sur Internet : elle fonctionne sur ton ordinateur avec MySQL local/Docker.
+
+## 10. Données d’exemple SQL
 
 Hibernate crée les tables à partir des entités. Si tu veux ajouter le jeu d’exemple du sujet, après le démarrage initial du serveur, ouvre un client MySQL et exécute :
 
@@ -226,7 +262,7 @@ Dans MySQL Workbench, tu peux aussi ouvrir le fichier `src\main\resources\db\02-
 
 Les données d’exemple sont facultatives : la collection Postman crée elle-même ses données de test.
 
-## 10. Comprendre les relations et le JSON
+## 11. Comprendre les relations et le JSON
 
 - `Product` possède une relation `ManyToOne` vers `Category`, chargée en `LAZY`.
 - `Category` expose une collection `OneToMany` en lecture interne, sans cascade de suppression dangereuse.
