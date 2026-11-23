@@ -80,4 +80,4 @@ Ce TP m'a permis de pratiquer les méthodes HTTP courantes, les paramètres de r
 
 ## 7. Captures d'écran
 
-Les fichiers livrés contiennent la collection importable et les résultats observés par requête. Ajouter ici des captures d'écran prises dans Postman après import et exécution de la collection, si l'enseignant les exige.
+Les fichiers livrés contiennent la collection importable et les résultats observés par requête. Ajouter ici des captures d'écran prises dans Postman après import et exécution de la collection.
