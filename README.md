@@ -9,6 +9,7 @@ Bienvenue dans mon espace de travaux pratiques en développement backend. Chaque
 | [TP1 — API REST et Postman](tp1-postman/README.md) | Requêtes HTTP, collection Postman et rapport | Importer la collection dans Postman |
 | [LAB2 — API produits Spring Boot](lab2-springboot/README.md) | Java 21, API REST en mémoire, DTO, validation et tests | `cd lab2-springboot` puis `mvn spring-boot:run` |
 | [LAB3 — API Spring Data JPA et MySQL](lab3-springboot/README.md) | Java 21, JPA, MySQL, catégories, produits, commandes et tests | `cd lab3-springboot` puis démarrer MySQL et Spring Boot |
+| [LAB4 — Authentification JWT et rôles](lab4-spring-security/README.md) | Spring Security, JWT, BCrypt, rôles USER/ADMIN et commandes privées | `cd lab4-spring-security` puis démarrer MySQL et Spring Boot |
 | [LAB5 — API produits Node.js](lab5-node-product-api/README.md) | Express, CRUD, validation, Swagger et Postman | `cd lab5-node-product-api` puis `npm install` et `npm run dev` |
 
 ## Cloner tous les labs
@@ -46,6 +47,6 @@ Après avoir terminé le test local, appuie sur `Win + Shift + S`, sélectionne 
 
 ## Vérifications automatiques
 
-GitHub Actions exécute les tests du LAB2 et du LAB3 avec Java 21, et ceux du LAB5 avec Node.js 20. Le TP1 est constitué de livrables Postman et d'un rapport.
+GitHub Actions exécute les tests du LAB2, du LAB3 et du LAB4 avec Java 21, et ceux du LAB5 avec Node.js 20. Le TP1 est constitué de livrables Postman et d'un rapport.
 
 Les API des LAB2 et LAB5 conservent leurs données en mémoire uniquement : les données de test reviennent à leur état initial quand le serveur redémarre. Le LAB3 utilise MySQL pour conserver les données.

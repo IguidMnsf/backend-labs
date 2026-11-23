@@ -33,6 +33,20 @@ jobs:
         working-directory: lab3-springboot
         run: mvn --batch-mode --no-transfer-progress test
 
+  lab4-spring-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          cache-dependency-path: lab4-spring-security/pom.xml
+      - name: Tester le LAB4 avec H2
+        working-directory: lab4-spring-security
+        run: mvn --batch-mode --no-transfer-progress test
+
   lab5-node:
     runs-on: ubuntu-latest
     steps:
