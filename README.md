@@ -12,6 +12,10 @@ Ce dépôt regroupe cinq travaux pratiques de développement backend. Chaque dos
 | [LAB4 — Authentification JWT et rôles](lab4-spring-security/README.md) | Spring Security, JWT, BCrypt, rôles USER/ADMIN et commandes privées | `cd lab4-spring-security` puis démarrer MySQL et Spring Boot |
 | [LAB5 — API produits Node.js](lab5-node-product-api/README.md) | Express, CRUD, validation, Swagger et Postman | `cd lab5-node-product-api` puis `npm ci` et `npm run dev` |
 
+## Rapports et archives à remettre
+
+Les rapports PDF et les archives ZIP prêtes à télécharger sont regroupés dans [Rapports et archives](livrables/README.md).
+
 ## Cloner le dépôt
 
 Dans PowerShell, cloner le dépôt dans le dossier utilisateur :

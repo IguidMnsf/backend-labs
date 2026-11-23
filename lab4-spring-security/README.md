@@ -4,6 +4,8 @@ Dans ce laboratoire, on repart de l'API produits du LAB3 et on la protège. Une 
 
 Le parcours d'une requête protégée est : **Postman → filtre JWT → identité et rôle → règle d'accès → contrôleur → réponse**. L'API est stateless : chaque requête apporte son jeton et le serveur ne stocke pas de session HTTP.
 
+Le rapport est disponible dans [rapport-lab4.md](rapport-lab4.md) et [rapport-lab4.pdf](rapport-lab4.pdf).
+
 ## Ce que contient le projet
 
 - Java 21, Spring Boot, Spring Security, Spring Data JPA, MySQL et JJWT.
