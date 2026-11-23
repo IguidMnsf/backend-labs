@@ -2,8 +2,9 @@
 
 ## Authentification JWT et contrôle des rôles
 
-**Étudiant(e) :** ____________________  
-**Date de remise :** ____________________  
+**Étudiant(e) :** ____________________
+
+**Date de remise :** ____________________
 **Projet :** [lab4-spring-security](https://github.com/IguidMnsf/backend-labs/tree/main/lab4-spring-security)
 
 ## 1. Objectif

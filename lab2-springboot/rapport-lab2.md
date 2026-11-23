@@ -2,8 +2,9 @@
 
 ## API REST de produits avec Spring Boot
 
-**Étudiant(e) :** ____________________  
-**Date de remise :** ____________________  
+**Étudiant(e) :** ____________________
+
+**Date de remise :** ____________________
 **Projet :** [lab2-springboot](https://github.com/IguidMnsf/backend-labs/tree/main/lab2-springboot)
 
 ## 1. Objectif

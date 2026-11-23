@@ -2,8 +2,9 @@
 
 ## API REST avec Spring Data JPA, Hibernate et MySQL
 
-**Étudiant(e) :** ____________________  
-**Date de remise :** ____________________  
+**Étudiant(e) :** ____________________
+
+**Date de remise :** ____________________
 **Projet :** [lab3-springboot](https://github.com/IguidMnsf/backend-labs/tree/main/lab3-springboot)
 
 ## 1. Objectif

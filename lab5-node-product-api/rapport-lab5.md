@@ -2,8 +2,9 @@
 
 ## API REST de produits avec Node.js et Express
 
-**Étudiant(e) :** ____________________  
-**Date de remise :** ____________________  
+**Étudiant(e) :** ____________________
+
+**Date de remise :** ____________________
 **Projet :** [lab5-node-product-api](https://github.com/IguidMnsf/backend-labs/tree/main/lab5-node-product-api)
 
 ## 1. Objectif
