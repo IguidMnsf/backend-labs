@@ -70,3 +70,36 @@ Utiliser `Win + Shift + S`, sélectionner la zone, puis choisir **Enregistrer so
 5. Après publication, ouvrir [le dossier TP1 sur GitHub](https://github.com/IguidMnsf/backend-labs/tree/main/tp1-postman) et capturer les livrables et le README.
 
 Le TP1 n'a pas de serveur à déployer ni de workflow Actions. Les captures GitHub montrent que la collection et le rapport sont publiés ; les captures Postman montrent les requêtes effectivement exécutées.
+
+## Dépannage
+
+**Postman indique « Could not get any response » ou une erreur réseau**
+
+1. Vérifier la connexion Internet : ce TP appelle `https://dummyjson.com`, pas une adresse `localhost`.
+2. Dans la requête, vérifier que l'URL commence par `https://dummyjson.com`.
+3. Si Postman Web est utilisé, sélectionner un agent qui peut accéder à Internet ou utiliser Postman Desktop.
+4. Cliquer de nouveau sur **Send** après quelques instants ; le service ou le réseau peut répondre lentement.
+
+**L'URL contient `undefined` ou la collection ne remplace pas `baseUrl`**
+
+1. Dans la liste en haut à droite de Postman, sélectionner **Demo API Env**.
+2. Ouvrir **Environments** et vérifier que `baseUrl` vaut exactement `https://dummyjson.com`.
+3. Si la variable n'existe pas, réimporter `Demo-API-Env.postman_environment.json`, puis sélectionner à nouveau l'environnement.
+
+**Une requête avec `productId` échoue**
+
+1. Ouvrir les variables de **Demo API Env** et vérifier que `productId` contient un identifiant numérique.
+2. Lancer d'abord la requête qui lit un produit ou refaire l'import de l'environnement pour restaurer sa valeur initiale.
+3. Lire l'URL complète affichée dans Postman avant de renvoyer la requête.
+
+**Un test automatique échoue ou une modification semble ne pas être conservée**
+
+1. Lire le statut HTTP et le corps de réponse avant de relancer la requête ; les assertions peuvent dépendre de la réponse réellement reçue.
+2. Réessayer si le service distant ou le réseau a répondu lentement.
+3. Garder à l'esprit que DummyJSON simule certaines créations, modifications et suppressions. Les changements ne sont pas enregistrés de manière durable ; ce comportement est normal.
+
+**Pour repartir proprement**
+
+1. Vérifier que les deux fichiers JSON sont importés : la collection et l'environnement.
+2. Sélectionner **Demo API Env**, puis confirmer `baseUrl`.
+3. Ouvrir la collection et exécuter les requêtes dans l'ordre des dossiers.

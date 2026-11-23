@@ -244,21 +244,82 @@ GitHub héberge le code et exécute les tests. L'API n'est pas hébergée sur In
 - La clé JWT et les identifiants ADMIN viennent des variables d'environnement locales. Ne les écris pas dans le code, dans Git, dans Postman partagé ou dans une capture.
 - Les fichiers `docs/uml/auth-sequence.md` et `docs/uml/protected-request.md` contiennent les diagrammes de séquence.
 
-## Dépannage
+## Dépannage pas à pas
 
-**`mvn` n'est pas reconnu** : installer Maven et rouvrir PowerShell. **Java 8 apparaît** : installer ou configurer le JDK 21 avant de lancer le projet.
+**`docker` n'est pas reconnu ou Docker Desktop ne répond pas**
 
-**Erreur de connexion MySQL** : démarrer Docker Desktop, exécuter `docker compose ps` et confirmer que l'application pointe vers `lab4_db`. Ce laboratoire ne doit pas utiliser la base du LAB3.
+1. Installer et ouvrir Docker Desktop, puis attendre que le moteur soit démarré.
+2. Depuis `lab4-spring-security`, vérifier `docker version` puis `docker compose ps`.
+3. En cas d'échec, redémarrer Docker Desktop et consulter **Troubleshoot** dans l'application avant de relancer `docker compose up -d mysql`.
 
-**Erreur `JWT_SECRET_BASE64`** : générer la clé avec les commandes de l'étape 4 dans le même terminal que `mvn spring-boot:run`.
+**Le port `3306` est déjà utilisé ou `lab4-mysql` ne démarre pas**
 
-**Réponse 401** : se reconnecter dans Postman et vérifier que la collection utilise le jeton du bon compte. Un jeton expire ou devient invalide si la clé change.
+Les LAB3 et LAB4 publient tous deux MySQL sur le port local `3306`; ils ne peuvent pas l'utiliser simultanément avec le même port. Arrêter l'autre base depuis son dossier avec `docker compose down`, sans ajouter `-v`. Vérifier ensuite :
 
-**Réponse 403** : le jeton est valide, mais l'action est réservée à l'autre rôle. Par exemple, la création d'un produit exige ADMIN.
+```powershell
+docker compose ps
+docker compose logs --tail 50 mysql
+```
 
-**La collection échoue au compte existant** : chaque exécution crée automatiquement un nom USER unique. N'envoie pas deux fois **1. Créer un compte USER** avant de refaire les deux connexions avec le nom sauvegardé.
+Attendre l'état `healthy`. Si un MySQL Windows occupe toujours le port, l'arrêter depuis **Services** ou modifier temporairement le port hôte dans `docker-compose.yml` en `3307:3306`, puis définir dans la même fenêtre que Spring Boot :
 
-**Arrêter MySQL** : depuis ce dossier, exécute `docker compose down`. Cette commande conserve le volume et les comptes de test.
+```powershell
+$env:DB_URL = "jdbc:mysql://localhost:3307/lab4_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+```
+
+**`Communications link failure`, `Access denied` ou `Unknown database`**
+
+1. Vérifier que `lab4-mysql` est `healthy` et que la base utilisée est `lab4_db`, distincte de `lab3_db`.
+2. Avec Docker, les valeurs locales par défaut sont `root`, `lab4pass` et `lab4_db`. Pour MySQL installé localement, exécuter `src\main\resources\db\01-create-database.sql` puis vérifier les variables `$env:DB_URL`, `$env:DB_USERNAME` et `$env:DB_PASSWORD`.
+3. Si le mot de passe du conteneur a été changé après la création initiale du volume, le conteneur conserve le mot de passe précédent. Réutiliser les valeurs de ce volume ou le réinitialiser seulement si ses données peuvent être perdues.
+4. Consulter `docker compose logs --tail 50 mysql`, puis redémarrer Spring Boot après correction.
+
+**L'application refuse de démarrer à cause de `JWT_SECRET_BASE64`**
+
+La clé doit être base64 et représenter au moins 32 octets aléatoires. Refaire la génération indiquée à l'étape 4 dans la même fenêtre PowerShell que `mvn spring-boot:run`. Les variables d'environnement d'une fenêtre ne sont pas automatiquement disponibles dans une autre. Ne pas copier la clé dans le dépôt, un rapport ou une capture.
+
+**Le démarrage échoue car aucun compte ADMIN n'est configuré**
+
+Vérifier que `BOOTSTRAP_ADMIN_ENABLED`, `BOOTSTRAP_ADMIN_USERNAME`, `BOOTSTRAP_ADMIN_EMAIL` et `BOOTSTRAP_ADMIN_PASSWORD` sont définies avant le démarrage. Respecter les règles de longueur du mot de passe décrites à l'étape 4. Toute variable nécessaire doit être définie à nouveau dans un nouveau terminal.
+
+**La connexion ADMIN échoue alors que les variables semblent correctes**
+
+Le compte ADMIN n'est créé que s'il n'existe pas déjà. Changer la variable de mot de passe ne modifie pas un compte existant. Vérifier le nom et le mot de passe déjà enregistrés, ou définir un nouveau nom d'utilisateur ADMIN et redémarrer l'application. Mettre ensuite à jour `adminUsername` et `adminPassword` dans les variables Postman locales.
+
+**Postman reçoit `401 Unauthorized`**
+
+1. Envoyer d'abord la requête de connexion du compte concerné et vérifier `200 OK`.
+2. Vérifier que le script a enregistré le jeton dans `userToken` ou `adminToken` et que l'en-tête `Authorization` est activé pour la requête.
+3. Se reconnecter si le jeton a expiré ou si la clé JWT a été régénérée.
+4. `401` sur une requête sans jeton ou avec un jeton invalide est attendu pour les scénarios de démonstration.
+
+**Postman reçoit `403 Forbidden`**
+
+Le jeton est valide, mais le rôle n'autorise pas l'opération. Les modifications de produits et catégories exigent ADMIN ; un USER ne peut voir ou supprimer que ses propres commandes. Utiliser le compte et le jeton correspondant au scénario. Dans cette collection, plusieurs `403` sont des résultats attendus.
+
+**Postman reçoit `Could not get any response` ou une erreur de connexion**
+
+Vérifier d'abord `curl.exe -i http://localhost:8080/api/products` dans une seconde fenêtre. Une réponse `401` confirme que l'API est joignable et protégée. Si la connexion échoue, vérifier le terminal Spring Boot, MySQL et le port `8080`. Avec Postman Web, utiliser Postman Desktop ou l'agent Desktop/local.
+
+**La collection échoue sur l'inscription ou les identifiants**
+
+Exécuter les requêtes dans l'ordre et relancer les deux connexions après l'inscription USER. Si le compte ADMIN existe déjà, utiliser les identifiants de ce compte ; modifier les variables de démarrage ne remplace pas son mot de passe. Ne pas partager les valeurs de la clé JWT ou des mots de passe dans des captures.
+
+**Les tests échouent ou l'API semble difficile à démarrer**
+
+Depuis `lab4-spring-security`, vérifier `Get-Location`, `Test-Path .\pom.xml`, `java -version` (21) et `mvn -version`. `mvn test` utilise H2 temporaire : MySQL n'a pas besoin d'être démarré pour ces tests. Lire la première erreur Maven avant de corriger les erreurs secondaires.
+
+**Réinitialiser la base Docker**
+
+La commande `docker compose down -v` supprime définitivement le volume du LAB4, les comptes et les données de démonstration. Ne l'utiliser que si ces données peuvent être perdues :
+
+```powershell
+docker compose down -v
+docker compose up -d mysql
+docker compose ps
+```
+
+Attendre `healthy`, puis redémarrer Spring Boot et recréer le compte ADMIN avec les variables locales. La commande simple `docker compose down`, sans `-v`, arrête le conteneur mais conserve la base.
 
 ## Résultat attendu
 
