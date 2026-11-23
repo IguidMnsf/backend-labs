@@ -37,6 +37,17 @@ Les exemples supposent que le dépôt est dans `$HOME\backend-labs`. Si le clone
 
 Les prérequis, commandes PowerShell, étapes Postman et captures à préparer sont détaillés dans le README de chaque laboratoire.
 
+## En cas d'erreur : méthode de dépannage
+
+Avant de modifier le code, vérifier ces quatre points dans l'ordre :
+
+1. **Le bon dossier est ouvert** : dans PowerShell, exécuter `Get-Location`. Pour revenir au dossier du dépôt : `Set-Location "$HOME\backend-labs"`.
+2. **Les outils sont disponibles** : vérifier `java -version` et `mvn -version` pour les LAB2 à LAB4, ou `node --version` et `npm --version` pour le LAB5.
+3. **Les services nécessaires fonctionnent** : démarrer l'API dans une fenêtre PowerShell et la laisser ouverte ; pour les LAB3/LAB4, démarrer MySQL avant l'API.
+4. **Postman vise le bon serveur** : choisir Postman Desktop, vérifier l'environnement, l'adresse `localhost` et l'ordre des requêtes. Le TP1 est l'exception : il utilise DummyJSON sur Internet, sans serveur local.
+
+Après chaque correction, relancer uniquement l'étape qui avait échoué. Les guides ci-dessous donnent les messages fréquents et les commandes de vérification : [TP1](tp1-postman/README.md#dépannage), [LAB2](lab2-springboot/README.md#dépannage-pas-à-pas), [LAB3](lab3-springboot/README.md#dépannage-pas-à-pas), [LAB4](lab4-spring-security/README.md#dépannage-pas-à-pas), [LAB5](lab5-node-product-api/README.md#dépannage-pas-à-pas).
+
 ## Important : GitHub et application locale
 
 Le dépôt GitHub héberge le **code source** et les guides. Les API des LAB2 à LAB5 s'exécutent localement : leur publication sur GitHub ne les rend pas automatiquement accessibles sur Internet. Pour utiliser Postman, démarrer l'API concernée puis employer l'adresse indiquée dans son guide, par exemple `http://localhost:8080` ou `http://localhost:3000`.

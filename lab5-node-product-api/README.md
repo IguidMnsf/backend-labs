@@ -423,3 +423,63 @@ Utiliser `Win + Shift + S`, sélectionner la zone, puis choisir **Enregistrer so
 3. Dans **Actions**, ouvrir un run récent et capturer le job `lab5-node` terminé avec succès.
 
 La publication GitHub et la réussite des tests ne mettent pas l'API en ligne. L'API s'exécute localement et utilise `localhost:3000`.
+
+## Dépannage pas à pas
+
+**`node` ou `npm` n'est pas reconnu**
+
+1. Installer Node.js 20 LTS (Node.js 18 ou supérieur est requis).
+2. Fermer puis rouvrir PowerShell.
+3. Vérifier `node --version` et `npm --version`.
+4. Si les commandes restent introuvables, vérifier que le dossier d'installation de Node.js figure dans le `PATH` Windows.
+
+**`npm ci` affiche `ENOENT`, `package.json not found` ou `lock file`**
+
+La commande doit être exécutée dans le dossier du LAB5, celui qui contient `package.json` et `package-lock.json` :
+
+```powershell
+Set-Location "$HOME\backend-labs\lab5-node-product-api"
+Get-Location
+Test-Path .\package.json
+Test-Path .\package-lock.json
+npm ci
+```
+
+Les deux vérifications `Test-Path` doivent afficher `True`. Si le dépôt se trouve ailleurs, utiliser son chemin réel. Si une erreur de téléchargement apparaît, vérifier la connexion Internet puis relancer `npm ci`.
+
+**Le serveur affiche `EADDRINUSE` ou le port 3000 est déjà utilisé**
+
+Arrêter l'ancien serveur avec `Ctrl+C` dans son terminal. Sinon, créer ou modifier `.env` dans le dossier du LAB5 et choisir `PORT=4000`. Relancer `npm run dev`, puis utiliser `http://localhost:4000` dans Postman et le navigateur.
+
+**Le serveur démarre mais Postman ne reçoit pas de réponse**
+
+1. Garder ouvert le terminal exécutant `npm run dev`.
+2. Dans une deuxième fenêtre PowerShell, exécuter `curl.exe -i http://localhost:3000/`.
+3. Si le port a été modifié, remplacer `3000` dans cette commande et vérifier `baseUrl` dans la collection.
+4. Si le navigateur ou `curl.exe` fonctionne mais pas Postman Web, utiliser Postman Desktop ou sélectionner l'agent Desktop/local.
+
+**Postman reçoit `400 Bad Request`**
+
+Vérifier que **Body → raw → JSON** est sélectionné et que le JSON est syntaxiquement valide. Pour `POST` et `PUT`, les champs `name`, `price` et `stock` doivent respecter les règles indiquées dans ce guide ; pour `PATCH`, fournir au moins un champ modifiable.
+
+**Postman reçoit `404 Not Found` ou ne retrouve pas un identifiant créé**
+
+1. Exécuter d'abord **3. Créer un produit** et vérifier `201 Created`.
+2. Vérifier que le script a enregistré l'identifiant dans `productId`.
+3. Envoyer les requêtes de lecture et modification avant **10. Supprimer le produit créé**.
+4. Après un redémarrage du serveur, les données sont réinitialisées : recréer le produit. Ce laboratoire utilise un tableau en mémoire.
+
+**Swagger affiche une erreur ou une documentation vide**
+
+Depuis `lab5-node-product-api`, exécuter `npm run swagger`, puis redémarrer `npm run dev`. Vérifier ensuite `http://localhost:3000/api-docs` et `http://localhost:3000/api-docs.json`. En cas de port modifié, employer le nouveau port. Le fichier `src/docs/swagger-output.json` est le document OpenAPI généré.
+
+**`npm test` échoue**
+
+1. Arrêter le serveur local si nécessaire, vérifier que PowerShell est dans `lab5-node-product-api`, puis exécuter `npm ci`.
+2. Relancer `npm test` et lire le premier échec de test.
+3. Les tests utilisent Supertest et démarrent l'application de test eux-mêmes ; il n'est pas nécessaire de laisser `npm run dev` ouvert.
+4. Si un test lit les données modifiées, le redémarrer après une nouvelle exécution complète des tests ; les tests initialisent leur jeu de données.
+
+**Les modifications ne restent pas après fermeture du terminal**
+
+C'est normal : les produits sont conservés en mémoire. Toute redémarrage restaure les données initiales ; la persistance dans une base de données ne fait pas partie de ce laboratoire.

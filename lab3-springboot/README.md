@@ -272,31 +272,78 @@ Les données d’exemple sont facultatives : la collection Postman crée elle-m�
 - Les contrôleurs retournent des DTO, pas les entités JPA : cela évite les cycles de sérialisation et le chargement accidentel de relations.
 - Les modifications métier sont encadrées par `@Transactional`.
 
-## Dépannage
+## Dépannage pas à pas
 
-**`Access denied for user`** : vérifier `DB_USERNAME` et `DB_PASSWORD`, puis ouvrir un nouveau terminal après toute modification de ces variables.
+**`docker` n'est pas reconnu ou affiche une erreur de connexion au moteur**
 
-**`Communications link failure`** : vérifier que MySQL fonctionne et écoute sur le port configuré. Avec Docker, exécuter `docker compose ps`.
+1. Installer et ouvrir Docker Desktop.
+2. Attendre que Docker Desktop indique que le moteur est démarré.
+3. Depuis `lab3-springboot`, vérifier `docker version` puis `docker compose ps`.
+4. Si l'erreur persiste, redémarrer Docker Desktop puis réessayer `docker compose up -d mysql`.
 
-**La base n’existe pas** : exécute `01-create-database.sql` ou recrée le conteneur après avoir corrigé sa configuration.
+**MySQL ne démarre pas, reste `unhealthy` ou affiche `port is already allocated`**
 
-**Port 8080 déjà occupé** : utilise un autre port dans la même fenêtre PowerShell :
+1. Lire l'état et les journaux :
+
+```powershell
+docker compose ps
+docker compose logs --tail 50 mysql
+```
+
+2. Si le port `3306` est déjà utilisé, un MySQL Windows ou le LAB4 peut en être la cause. Arrêter le serveur MySQL concurrent. Pour arrêter le LAB4, ouvrir une autre fenêtre PowerShell, accéder à `"$HOME\backend-labs\lab4-spring-security"` et exécuter `docker compose down`.
+3. Si le port doit rester occupé, modifier temporairement dans `docker-compose.yml` le mappage en `3307:3306`, puis dans la même fenêtre que Spring Boot définir `$env:DB_URL = "jdbc:mysql://localhost:3307/lab3_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"`.
+4. Relancer `docker compose up -d mysql` et attendre l'état `healthy` avant de lancer l'API.
+
+**`Communications link failure` ou connexion refusée à MySQL**
+
+1. Vérifier `docker compose ps` et attendre que `lab3-mysql` soit `healthy`.
+2. Contrôler que Spring Boot utilise `localhost:3306` (ou le port local choisi à l'étape précédente) et la base `lab3_db`.
+3. Examiner `docker compose logs --tail 50 mysql`.
+4. Démarrer l'application depuis le dossier du LAB3 et non depuis un autre laboratoire.
+
+**`Access denied for user` ou `Unknown database`**
+
+Avec Docker, les valeurs par défaut de ce laboratoire sont `root`, `lab3pass` et `lab3_db`. Avec un MySQL local, vérifier que les variables `$env:DB_USERNAME`, `$env:DB_PASSWORD` et éventuellement `$env:DB_URL` sont définies dans la même fenêtre PowerShell que `mvn spring-boot:run`. Vérifier également que le script `src\main\resources\db\01-create-database.sql` a été exécuté pour un MySQL installé localement.
+
+Si un mot de passe MySQL de Docker a été changé après la première création du volume, le conteneur existant conserve l'ancien compte. Utiliser les identifiants initiaux ou réinitialiser le volume comme indiqué ci-dessous.
+
+**Le port `8080` est déjà utilisé**
+
+Arrêter l'autre serveur avec `Ctrl+C`, ou choisir le port `8081` dans la même fenêtre PowerShell :
 
 ```powershell
 $env:SERVER_PORT = "8081"
 mvn spring-boot:run
 ```
 
-**Produit ou catégorie introuvable** : crée d’abord la catégorie, puis le produit, et utilise les identifiants retournés par l’API.
+Dans Postman, modifier `baseUrl` en `http://localhost:8081`.
 
-**Aucune donnée après redémarrage** : contrairement au LAB2, ce projet utilise MySQL. Vérifier que la connexion pointe vers la même base. Les tests H2 sont temporaires et isolés.
+**`mvn` échoue avant le démarrage ou depuis un mauvais répertoire**
 
-**Réinitialiser la base Docker** : la commande suivante supprime définitivement le volume MySQL du laboratoire et toutes ses données locales. L'exécuter uniquement pour recommencer à zéro :
+Vérifier que `Get-Location` se termine par `backend-labs\lab3-springboot`, puis que `Test-Path .\pom.xml` affiche `True`. Les commandes Compose et Maven doivent être exécutées depuis ce dossier. Vérifier également `java -version` (21) et `mvn -version`.
+
+**Postman reçoit `404`, `400` ou `409`**
+
+1. Pour créer un produit, créer d'abord une catégorie et utiliser le `categoryId` réellement retourné.
+2. Rejouer les requêtes de création dans l'ordre et utiliser les identifiants capturés par la collection.
+3. `400` indique généralement un champ manquant ou invalide ; vérifier le JSON et le type de contenu `application/json`.
+4. `409 Conflict` lors de la suppression d'un produit utilisé dans une commande est attendu : supprimer d'abord la commande ou garder ce résultat comme démonstration de la règle métier.
+
+**Les données semblent avoir disparu**
+
+Vérifier que l'application pointe vers la même base `lab3_db` et le même port. Avec Docker, `docker compose down` arrête les conteneurs mais conserve le volume ; ne pas confondre avec `docker compose down -v`. Les tests `mvn test` utilisent H2 temporaire et n'écrivent pas dans la base MySQL de démonstration.
+
+**Recommencer avec une base Docker vide**
+
+Cette opération supprime définitivement toutes les données du LAB3 dans le volume local. Ne l'utiliser que si une remise à zéro est souhaitée :
 
 ```powershell
 docker compose down -v
 docker compose up -d mysql
+docker compose ps
 ```
+
+Attendre l'état `healthy`, puis redémarrer Spring Boot. Pour éviter de supprimer des données à l'avenir, utiliser `docker compose down` sans `-v`.
 
 ## Résultat attendu
 

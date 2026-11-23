@@ -178,3 +178,58 @@ Utiliser `Win + Shift + S`, sélectionner la zone, puis choisir **Enregistrer so
 3. Ouvre **Actions** du dépôt et capture un run récent où le job `lab2-springboot` est terminé avec succès.
 
 La page GitHub et le workflow montrent que le code est publié et vérifié. Il ne s'agit pas d'un déploiement Internet : l'API fonctionne localement.
+
+## Dépannage pas à pas
+
+**`java` ou `mvn` n'est pas reconnu, ou la version de Java n'est pas 21**
+
+1. Installer un JDK 21 et Maven si nécessaire.
+2. Fermer puis rouvrir PowerShell pour recharger le `PATH`.
+3. Depuis le dossier du projet, vérifier `java -version` et `mvn -version`.
+4. Si plusieurs versions de Java sont installées, sélectionner le JDK 21 dans le `PATH` Windows puis rouvrir le terminal.
+
+**`mvn spring-boot:run` échoue avec `No plugin found`, `MissingProjectException` ou un fichier `pom.xml` introuvable**
+
+La commande est probablement lancée depuis le mauvais dossier. Vérifier avec :
+
+```powershell
+Get-Location
+Test-Path .\pom.xml
+Set-Location "$HOME\backend-labs\lab2-springboot"
+```
+
+`Test-Path` doit afficher `True`. Si le dépôt a été cloné ailleurs, remplacer le chemin par son emplacement réel.
+
+**Le port 8080 est déjà utilisé (`Address already in use`)**
+
+1. Vérifier si une autre API ou un ancien serveur Spring Boot tourne déjà.
+2. Si le serveur appartient à un autre terminal, y appuyer sur `Ctrl+C`.
+3. Sinon, lancer le LAB2 sur un autre port et mettre à jour `baseUrl` dans la collection Postman :
+
+```powershell
+mvn spring-boot:run "-Dspring-boot.run.arguments=--server.port=8081"
+```
+
+Dans Postman, utiliser alors `http://localhost:8081`.
+
+**Postman affiche une erreur de connexion ou « Could not get any response »**
+
+1. Garder ouvert le terminal où `mvn spring-boot:run` a affiché le démarrage réussi.
+2. Dans une deuxième fenêtre PowerShell, exécuter `curl.exe -i http://localhost:8080/api/products`.
+3. Si cette requête ne répond pas, vérifier le message d'erreur dans le terminal du serveur et confirmer que le port est `8080`.
+4. Si Postman Web est utilisé, sélectionner l'agent Desktop/local ou passer à Postman Desktop.
+
+**La réponse est `400 Bad Request`**
+
+Vérifier que le corps est du JSON valide et que `Content-Type` vaut `application/json`. `name` doit être présent, `price` strictement positif, et `quantity` comprise entre 0 et 1000. Dans Postman, choisir **Body → raw → JSON** et utiliser le modèle fourni dans ce guide.
+
+**La réponse est `404 Not Found` ou les tests Postman ne trouvent pas le produit**
+
+1. Refaire **1. Créer un produit** après un redémarrage du serveur : les données du LAB2 sont en mémoire et sont réinitialisées à chaque démarrage.
+2. Vérifier que la création renvoie `201 Created`.
+3. Utiliser l'identifiant indiqué dans cette réponse ; le script Postman doit actualiser `productId`.
+4. Lancer la suppression uniquement à la fin, car elle rend ensuite les autres requêtes sur ce produit invalides.
+
+**Après une erreur de compilation ou de dépendance**
+
+Depuis `lab2-springboot`, exécuter `mvn clean test`. Lire la première erreur signalée par Maven ; les lignes d'erreur suivantes peuvent seulement en découler. Vérifier également l'accès Internet lors du téléchargement initial des dépendances.
