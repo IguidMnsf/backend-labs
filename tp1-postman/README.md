@@ -25,16 +25,16 @@ Les codes HTTP observés lors de la préparation du rapport sont consignés dans
 
 ## Ouvrir les fichiers locaux avec PowerShell
 
-Sur cet ordinateur, le dépôt est dans `C:\Users\monsi\.copilot\repos\backend-labs`. Pour ouvrir le TP1 :
+Pour accéder au TP1 dans un clone créé sous le dossier utilisateur :
 
 ```powershell
-Set-Location "$HOME\.copilot\repos\backend-labs"
-git pull
+Set-Location "$HOME\backend-labs"
+git pull --ff-only
 Set-Location .\tp1-postman
 Get-Location
 ```
 
-Le dernier résultat doit finir par `backend-labs\tp1-postman`. Si tu n'as pas encore le dépôt, clone-le une seule fois :
+Le dernier chemin doit finir par `backend-labs\tp1-postman`. Si le dépôt n'est pas encore cloné :
 
 ```powershell
 Set-Location $HOME
@@ -44,10 +44,10 @@ Set-Location .\backend-labs\tp1-postman
 
 ## Postman expliqué simplement
 
-Postman est une application qui envoie une requête HTTP à un site/API et affiche sa réponse. Dans ce TP, les requêtes vont sur Internet vers DummyJSON. **Tu n'as pas à démarrer de serveur dans PowerShell**, mais tu dois avoir une connexion Internet.
+Postman envoie une requête HTTP à un site ou à une API, puis affiche la réponse. Dans ce TP, les requêtes sont envoyées au service public DummyJSON. Aucun serveur local n'est à démarrer ; une connexion Internet est nécessaire.
 
 1. Ouvre Postman et clique **Import** → **Files**.
-2. Dans `C:\Users\monsi\.copilot\repos\backend-labs\tp1-postman`, importe `TP1-API-REST-Postman.postman_collection.json` et `Demo-API-Env.postman_environment.json`.
+2. Dans le clone local, ouvrir `tp1-postman` et importer `TP1-API-REST-Postman.postman_collection.json` ainsi que `Demo-API-Env.postman_environment.json`.
 3. Dans la liste déroulante des environnements (en haut à droite), sélectionne **Demo API Env**.
 4. Dans **Collections**, ouvre **LAB1 - Gestion Produits REST**, puis déplie le dossier **Lecture (GET)**.
 5. Clique sur **1. Lister les 5 premiers produits**, puis **Send**.
@@ -61,12 +61,12 @@ DummyJSON simule certaines écritures. Une création ou une suppression peut ren
 
 ## Captures d'écran à remettre
 
-Appuie sur `Win + Shift + S`, sélectionne la zone, clique la notification de capture puis **Enregistrer sous**. Enregistre les images, par exemple dans `Documents\Captures-Labs\TP1`.
+Utiliser `Win + Shift + S`, sélectionner la zone, puis choisir **Enregistrer sous** dans la notification de capture. Enregistrer les images dans un dossier dédié, par exemple `Documents\Captures-Labs\TP1`.
 
-1. Capture Postman sur **1. Lister les 5 premiers produits** : on doit voir l'URL `https://dummyjson.com`, le statut `200 OK` et le JSON de réponse.
-2. Capture la même requête avec **Test Results** ouvert et les assertions visibles.
-3. Capture **Demo API Env** sélectionné et la variable `baseUrl`.
-4. Facultatif : capture le Runner après exécution de la collection et ses résultats.
-5. Après publication, ouvre [le dossier TP1 sur GitHub](https://github.com/IguidMnsf/backend-labs/tree/main/tp1-postman) et capture le dossier des livrables et le README affiché par GitHub.
+1. Dans Postman, afficher **1. Lister les 5 premiers produits**, l'URL `https://dummyjson.com`, le statut `200 OK` et le JSON de réponse.
+2. Afficher la même requête avec **Test Results** ouvert et les assertions visibles.
+3. Afficher **Demo API Env** sélectionné et la variable `baseUrl`.
+4. Facultatif : afficher les résultats du Runner après exécution de la collection.
+5. Après publication, ouvrir [le dossier TP1 sur GitHub](https://github.com/IguidMnsf/backend-labs/tree/main/tp1-postman) et capturer les livrables et le README.
 
 Le TP1 n'a pas de serveur à déployer ni de workflow Actions. Les captures GitHub montrent que la collection et le rapport sont publiés ; les captures Postman montrent les requêtes effectivement exécutées.

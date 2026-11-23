@@ -71,7 +71,7 @@ Exemple de corps JSON pour POST et PUT :
 
 ## Tester avec curl dans PowerShell
 
-Tu peux aussi appeler l'API sans Postman, depuis une deuxième fenêtre PowerShell. Les formes JSON entre apostrophes sont compatibles avec PowerShell :
+L'API peut également être appelée sans Postman depuis une deuxième fenêtre PowerShell. Les formes JSON entre apostrophes sont compatibles avec PowerShell :
 
 ```powershell
 curl.exe -i -X POST http://localhost:8080/api/products -H "Content-Type: application/json" -d '{"name":"Ordinateur Portable","description":"Laptop 15 pouces","price":1200.50,"quantity":10}'
@@ -102,29 +102,23 @@ src/main/java/com/example/productapi/
 
 La réponse de création est bien HTTP `201`; elle ajoute également l'en-tête `Location`. Les opérations d'écriture ne sont pas persistées au redémarrage : l'ajout d'une base de données est l'objet du LAB3.
 
-## Guide débutant : démarrer depuis ce PC
+## Démarrage local avec PowerShell
 
-Le dossier local de ce laboratoire est :
-
-```text
-C:\Users\monsi\.copilot\repos\backend-labs\lab2-springboot
-```
-
-Ouvre PowerShell et accède au projet :
-
-```powershell
-Set-Location "$HOME\.copilot\repos\backend-labs"
-git pull
-Set-Location .\lab2-springboot
-Get-Location
-```
-
-Le dernier résultat doit finir par `backend-labs\lab2-springboot`. Si le dépôt n'existe pas encore sur ton ordinateur, télécharge-le d'abord :
+Cloner le dépôt dans le dossier utilisateur puis accéder au projet :
 
 ```powershell
 Set-Location $HOME
 git clone https://github.com/IguidMnsf/backend-labs.git
 Set-Location .\backend-labs\lab2-springboot
+```
+
+Les commandes supposent un clone dans `$HOME\backend-labs`. Si le dépôt est enregistré ailleurs, remplacer ce chemin par son emplacement réel. Pour un dépôt déjà cloné :
+
+```powershell
+Set-Location "$HOME\backend-labs"
+git pull --ff-only
+Set-Location .\lab2-springboot
+Get-Location
 ```
 
 Vérifie que Java 21 et Maven sont installés :
@@ -134,38 +128,39 @@ java -version
 mvn -version
 ```
 
-La première commande doit afficher Java 21. Sur cet ordinateur, elle peut encore afficher Java 8 : installe le JDK 21 et Maven avec `winget` si cette commande est disponible dans Windows :
+La première commande doit afficher Java 21. Pour installer le JDK 21 avec `winget` :
 
 ```powershell
 winget install --id EclipseAdoptium.Temurin.21.JDK -e
-winget install --id Apache.Maven -e
 ```
 
-Ferme PowerShell, ouvre une nouvelle fenêtre, puis vérifie à nouveau `java -version` et `mvn -version`. Si plusieurs versions de Java sont installées, configure le `PATH` Windows pour que le JDK 21 soit utilisé. Dans le dossier du projet, démarre ensuite le serveur :
+Si `mvn` n'est pas reconnu, installer Apache Maven depuis [la page officielle de téléchargement](https://maven.apache.org/download.cgi), ajouter le dossier `bin` de Maven au `PATH` Windows, puis ouvrir une nouvelle fenêtre PowerShell. Si Chocolatey est déjà installé, l'installation peut aussi se faire avec `choco install maven -y`.
+
+Après l'installation, fermer puis rouvrir PowerShell et vérifier `java -version` et `mvn -version`. En présence de plusieurs versions de Java, configurer le `PATH` Windows pour sélectionner le JDK 21. Depuis le dossier du projet, démarrer le serveur :
 
 ```powershell
 mvn spring-boot:run
 ```
 
-Laisse cette fenêtre ouverte. Quand Spring Boot affiche `Started ...Application`, l'API est disponible à `http://localhost:8080`. `localhost` signifie que le serveur tourne sur ton propre ordinateur. Pour l'arrêter, reviens dans cette fenêtre et appuie sur `Ctrl+C`.
+Garder cette fenêtre ouverte. Lorsque Spring Boot affiche `Started ...Application`, l'API est disponible à `http://localhost:8080`. `localhost` désigne l'ordinateur sur lequel le serveur s'exécute. Pour arrêter le serveur, utiliser `Ctrl+C` dans cette fenêtre.
 
 ## Postman expliqué pas à pas
 
 Postman sert à envoyer une requête à l'API et à lire sa réponse. Postman ne démarre pas le serveur : la fenêtre PowerShell contenant `mvn spring-boot:run` doit rester ouverte.
 
 1. Ouvre Postman Desktop et clique sur **Import** → **Files**.
-2. Importe `C:\Users\monsi\.copilot\repos\backend-labs\lab2-springboot\postman\LAB2-Product-API.postman_collection.json`.
+2. Dans le clone local, ouvrir `lab2-springboot\postman` et importer `LAB2-Product-API.postman_collection.json`.
 3. Dans **Collections**, ouvre **LAB2 - API Produits Spring Boot**. L'adresse enregistrée est `http://localhost:8080`.
 4. Clique sur **1. Créer un produit**, puis **Send**.
 5. Vérifie le statut `201 Created` et l'onglet **Body** en bas : le produit apparaît sous forme de JSON. Son identifiant est mémorisé par Postman.
 6. Exécute ensuite les requêtes de liste, recherche, lecture et mise à jour. Pour lancer plusieurs requêtes dans l'ordre, clique sur **Run** de la collection.
 7. Exécute la requête de suppression en dernier. Les onglets **Body** et **Test Results** montrent respectivement la réponse et les tests.
 
-Si tu utilises Postman dans un navigateur et que `localhost` n'est pas accessible, ouvre Postman Desktop ou choisis l'agent Desktop/local. Vérifie aussi que le serveur répond à `http://localhost:8080/api/products`.
+Si Postman dans un navigateur n'accède pas à `localhost`, utiliser Postman Desktop ou sélectionner l'agent Desktop/local. Vérifier également que le serveur répond à `http://localhost:8080/api/products`.
 
 ## Captures d'écran à préparer
 
-Appuie sur `Win + Shift + S`, sélectionne la zone, clique la notification de capture puis **Enregistrer sous**. Enregistre les images, par exemple dans `Documents\Captures-Labs\LAB2`.
+Utiliser `Win + Shift + S`, sélectionner la zone, puis choisir **Enregistrer sous** dans l'outil Capture d'écran. Enregistrer les images dans un dossier dédié, par exemple `Documents\Captures-Labs\LAB2`.
 
 **Captures locales :**
 
@@ -180,4 +175,4 @@ Appuie sur `Win + Shift + S`, sélectionne la zone, clique la notification de ca
 2. Capture cette page puis le README ouvert sur GitHub.
 3. Ouvre **Actions** du dépôt et capture un run récent où le job `lab2-springboot` est terminé avec succès.
 
-La page GitHub et le workflow montrent que le code est publié et vérifié. Ce n'est pas un déploiement Internet : l'API fonctionne localement sur ton ordinateur.
+La page GitHub et le workflow montrent que le code est publié et vérifié. Il ne s'agit pas d'un déploiement Internet : l'API fonctionne localement.

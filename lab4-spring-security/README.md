@@ -36,33 +36,26 @@ java -version
 mvn -version
 ```
 
-Il faut que Java indique la version 21. Si `java -version` affiche Java 8 et si `winget` est disponible, tu peux installer les outils ainsi :
+Java doit indiquer la version 21. Pour installer le JDK 21 avec `winget` :
 
 ```powershell
 winget install --id EclipseAdoptium.Temurin.21.JDK -e
-winget install --id Apache.Maven -e
 ```
 
-Ferme PowerShell, rouvre-le et vérifie de nouveau les versions. Si plusieurs versions de Java sont installées, règle le `PATH` Windows pour utiliser le JDK 21.
+Si `mvn` n'est pas reconnu, installer Apache Maven depuis [la page officielle de téléchargement](https://maven.apache.org/download.cgi), ajouter le dossier `bin` de Maven au `PATH` Windows, puis ouvrir une nouvelle fenêtre PowerShell. Si Chocolatey est déjà installé, utiliser `choco install maven -y`. Vérifier ensuite `java -version` et `mvn -version`. Si plusieurs versions de Java sont installées, configurer le `PATH` pour utiliser le JDK 21.
 
 ## 2. Ouvrir le dossier du LAB4 en local
 
-Sur cet ordinateur, le dépôt est ici :
-
-```text
-C:\Users\monsi\.copilot\repos\backend-labs
-```
-
-Dans PowerShell, mets-le à jour et entre dans le projet :
+Les commandes supposent un clone sous `$HOME\backend-labs`. Si le dépôt se trouve ailleurs, remplacer ce chemin par son emplacement réel. Pour un clone existant, le mettre à jour puis entrer dans le projet :
 
 ```powershell
-Set-Location "$HOME\.copilot\repos\backend-labs"
-git pull
+Set-Location "$HOME\backend-labs"
+git pull --ff-only
 Set-Location .\lab4-spring-security
 Get-Location
 ```
 
-Le chemin affiché doit finir par `backend-labs\lab4-spring-security`. Si tu n'as pas encore téléchargé le dépôt, clone-le une seule fois :
+Si le dépôt n'est pas encore cloné :
 
 ```powershell
 Set-Location $HOME
@@ -92,7 +85,7 @@ Pour se connecter à la base avec le client MySQL fourni dans Docker :
 docker compose exec mysql mysql -uroot -plab4pass lab4_db
 ```
 
-Tu peux quitter l'invite MySQL avec `exit`. Pour ne pas supprimer tes données, ne lance pas `docker compose down -v`.
+Quitter l'invite MySQL avec `exit`. La commande `docker compose down -v` supprime les données locales ; ne pas l'utiliser sauf pour réinitialiser complètement la base.
 
 ### MySQL installé localement
 
@@ -106,7 +99,7 @@ $env:DB_USERNAME = "root"
 $env:DB_PASSWORD = Read-Host "Mot de passe MySQL"
 ```
 
-La table `users` est générée par JPA au démarrage. Tu peux aussi exécuter `src\main\resources\db\03-create-users-table.sql` après avoir créé la base.
+La table `users` est générée par JPA au démarrage. Le script `src\main\resources\db\03-create-users-table.sql` peut également être exécuté après la création de la base.
 
 ## 4. Préparer une clé JWT et le compte ADMIN
 
@@ -120,7 +113,7 @@ $env:JWT_SECRET_BASE64 = [Convert]::ToBase64String($bytes)
 $rng.Dispose()
 ```
 
-Active ensuite la création locale du compte ADMIN. Choisis ton propre mot de passe (12 à 72 caractères). Quand PowerShell le demande, écris-le et appuie sur Entrée :
+Activer ensuite la création locale du compte ADMIN et choisir un mot de passe de 12 à 72 caractères. Lorsqu'il est demandé par PowerShell, le saisir puis appuyer sur Entrée :
 
 ```powershell
 $env:BOOTSTRAP_ADMIN_ENABLED = "true"
@@ -152,7 +145,7 @@ curl.exe -i http://localhost:8080/api/products
 
 Sans jeton, cette route doit répondre **`401 Unauthorized`**. C'est un résultat attendu : l'API est bien protégée. Pour arrêter Spring Boot, clique dans le terminal du serveur puis appuie sur `Ctrl+C`.
 
-Si tu arrêtes puis redémarres l'application dans la même fenêtre, les variables JWT et ADMIN restent définies. Si tu ouvres un nouveau terminal, il faut les définir de nouveau. Si tu régénères la clé JWT, les jetons déjà reçus deviennent invalides : reconnecte-toi.
+Après un arrêt puis un redémarrage dans la même fenêtre, les variables JWT et ADMIN restent définies. Dans un nouveau terminal, elles doivent être définies à nouveau. Toute régénération de la clé JWT invalide les jetons existants ; une nouvelle connexion est alors nécessaire.
 
 ## 6. Les requêtes disponibles et les rôles
 
@@ -178,36 +171,36 @@ Le jeton expire après une heure par défaut. Le rôle n'est pas accepté depuis
 
 ## 7. Postman expliqué pas à pas
 
-Postman sert à envoyer une requête à l'API et à afficher son statut et son JSON. **Postman ne démarre pas MySQL et ne démarre pas l'API** : garde Docker Desktop et le terminal `mvn spring-boot:run` ouverts.
+Postman sert à envoyer une requête à l'API et à afficher son statut et son JSON. **Postman ne démarre pas MySQL et ne démarre pas l'API** : garder Docker Desktop et le terminal `mvn spring-boot:run` ouverts.
 
 ### Importer la collection
 
-1. Ouvre **Postman Desktop**.
-2. Clique **Import** → **Files**.
-3. Sélectionne `C:\Users\monsi\.copilot\repos\backend-labs\lab4-spring-security\postman\LAB4-Auth.postman_collection.json`.
+1. Ouvrir **Postman Desktop**.
+2. Cliquer sur **Import** → **Files**.
+3. Dans le clone local, ouvrir `lab4-spring-security\postman` et sélectionner `LAB4-Auth.postman_collection.json`.
 4. Dans **Collections**, ouvre **LAB4 - Authentification JWT et rôles**.
-5. Ouvre le menu `...` de la collection puis **Edit** ou **Variables**.
-6. Dans **Current value** de `adminUsername`, saisis le nom configuré dans PowerShell (par défaut `lab-admin`).
-7. Dans **Current value** de `adminPassword`, saisis le mot de passe ADMIN choisi lors du démarrage. Garde cette valeur dans Postman seulement et ne la capture pas à l'écran.
-8. Laisse `baseUrl` à `http://localhost:8080`. La collection créera le nom unique du compte USER et mémorisera les jetons après connexion.
+5. Ouvrir le menu `...` de la collection puis **Edit** ou **Variables**.
+6. Dans **Current value** de `adminUsername`, saisir le nom configuré dans PowerShell (par défaut `lab-admin`).
+7. Dans **Current value** de `adminPassword`, saisir le mot de passe ADMIN choisi au démarrage. Conserver cette valeur dans Postman et ne pas la faire apparaître dans les captures.
+8. Laisser `baseUrl` à `http://localhost:8080`. La collection crée un nom USER unique et mémorise les jetons après connexion.
 
 ### Exécuter le parcours dans l'ordre
 
-1. Ouvre **1. Créer un compte USER** puis clique **Send**. Résultat attendu : `201 Created`, avec `"role": "USER"`.
-2. Ouvre **2. Connexion USER et récupération du JWT**, puis clique **Send**. Résultat attendu : `200 OK`. Le script enregistre le jeton dans `userToken`.
-3. Ouvre **3. Connexion ADMIN et récupération du JWT**, puis clique **Send**. Le script enregistre le jeton ADMIN dans `adminToken`.
-4. Envoie **4. Refuser les produits sans jeton** : `401 Unauthorized` est attendu.
-5. Envoie **5. Créer une catégorie (ADMIN)**, puis **6. Créer un produit (ADMIN)**. Le `201 Created` confirme l'accès ADMIN ; les identifiants sont mémorisés automatiquement.
-6. Vérifie les règles catégories avec **7. ADMIN modifie une catégorie** (`200`), puis **8. USER ne peut pas modifier une catégorie** (`403`).
-7. Envoie **9. USER peut consulter les produits** : la réponse doit être `200 OK`.
-8. Envoie **10. USER ne peut pas créer un produit** : `403 Forbidden` est attendu. Le compte est connecté, mais n'a pas le rôle ADMIN.
-9. Envoie **11. USER crée une commande**, puis **12. USER voit ses commandes**. La commande est associée au propriétaire USER.
-10. Envoie **13. ADMIN voit toutes les commandes**.
-11. Termine par **14. USER ne peut pas supprimer une commande** (`403`), **15. ADMIN supprime une commande** (`204`), **16. ADMIN ne supprime pas une catégorie non vide** (`409`) et **17. Refuser un JWT invalide** (`401`).
+1. Ouvrir **1. Créer un compte USER** et cliquer sur **Send**. Résultat attendu : `201 Created`, avec `"role": "USER"`.
+2. Ouvrir **2. Connexion USER et récupération du JWT**, puis cliquer sur **Send**. Résultat attendu : `200 OK`. Le script enregistre le jeton dans `userToken`.
+3. Ouvrir **3. Connexion ADMIN et récupération du JWT**, puis cliquer sur **Send**. Le script enregistre le jeton ADMIN dans `adminToken`.
+4. Envoyer **4. Refuser les produits sans jeton** : `401 Unauthorized` est attendu.
+5. Envoyer **5. Créer une catégorie (ADMIN)**, puis **6. Créer un produit (ADMIN)**. Le statut `201 Created` confirme l'accès ADMIN ; les identifiants sont mémorisés automatiquement.
+6. Vérifier les règles des catégories avec **7. ADMIN modifie une catégorie** (`200`), puis **8. USER ne peut pas modifier une catégorie** (`403`).
+7. Envoyer **9. USER peut consulter les produits** : la réponse attendue est `200 OK`.
+8. Envoyer **10. USER ne peut pas créer un produit** : `403 Forbidden` est attendu. Le compte est connecté, mais ne possède pas le rôle ADMIN.
+9. Envoyer **11. USER crée une commande**, puis **12. USER voit ses commandes**. La commande est associée au compte USER.
+10. Envoyer **13. ADMIN voit toutes les commandes**.
+11. Terminer par **14. USER ne peut pas supprimer une commande** (`403`), **15. ADMIN supprime une commande** (`204`), **16. ADMIN ne supprime pas une catégorie non vide** (`409`) et **17. Refuser un JWT invalide** (`401`).
 
 Dans la réponse en bas de Postman, **Body** montre le JSON, le badge en haut à droite montre le statut (`200`, `401`, etc.) et **Test Results** montre les assertions. Les erreurs `401` et `403` de la collection sont intentionnelles : elles démontrent les protections.
 
-Si le login ADMIN échoue, vérifie que tu as démarré l'application avec le bon mot de passe ADMIN, que `adminUsername`/`adminPassword` sont corrects dans Postman et que le conteneur MySQL est `healthy`. Si Postman ne joint pas `localhost`, vérifie d'abord `http://localhost:8080/api/products` dans ton navigateur, puis utilise Postman Desktop.
+Si la connexion ADMIN échoue, vérifier que l'application a été démarrée avec le bon mot de passe, que `adminUsername`/`adminPassword` sont exacts dans Postman et que le conteneur MySQL est `healthy`. Si Postman ne joint pas `localhost`, ouvrir d'abord `http://localhost:8080/api/products` dans un navigateur, puis utiliser Postman Desktop.
 
 ## 8. Tests automatiques
 
@@ -221,7 +214,7 @@ Les tests utilisent une base H2 temporaire. Ils vérifient l'inscription avec r�
 
 ## 9. Captures d'écran à préparer
 
-Utilise `Win + Shift + S`, sélectionne la zone, clique la notification puis **Enregistrer sous**. Range les captures, par exemple dans `Documents\Captures-Labs\LAB4`. Masque toujours les mots de passe, clés et jetons.
+Utiliser `Win + Shift + S`, sélectionner la zone, puis choisir **Enregistrer sous** dans l'outil Capture d'écran. Enregistrer les images dans un dossier dédié, par exemple `Documents\Captures-Labs\LAB4`. Masquer les mots de passe, clés et jetons.
 
 **Captures de démonstration locale :**
 
@@ -240,24 +233,24 @@ Utilise `Win + Shift + S`, sélectionne la zone, clique la notification puis **E
 3. Dans **Actions**, ouvre un run récent et capture le job `lab4-spring-security` terminé avec succès.
 4. Facultatif : affiche la collection Postman ou un diagramme dans `docs/uml`.
 
-GitHub héberge le code et exécute les tests. L'API n'est pas hébergée sur Internet par ce dépôt : les requêtes Postman `localhost:8080` sont servies par ton ordinateur.
+GitHub héberge le code et exécute les tests. L'API n'est pas hébergée sur Internet par ce dépôt : les requêtes Postman `localhost:8080` sont servies par l'ordinateur local.
 
 ## 10. CORS, CSRF et secrets
 
-- La politique CORS de démonstration n'autorise que `http://localhost:3000` et `http://127.0.0.1:5500`, avec les méthodes API utiles. Modifie cette liste si ton frontend local utilise une autre adresse.
+- La politique CORS de démonstration n'autorise que `http://localhost:3000` et `http://127.0.0.1:5500`, avec les méthodes API utiles. Adapter cette liste si le frontend local utilise une autre adresse.
 - CSRF est désactivé parce que l'API reçoit un jeton Bearer dans l'en-tête et n'utilise pas d'authentification par cookie de navigateur. Si l'authentification est un jour déplacée vers des cookies, cette décision devra être revue.
 - La clé JWT et les identifiants ADMIN viennent des variables d'environnement locales. Ne les écris pas dans le code, dans Git, dans Postman partagé ou dans une capture.
 - Les fichiers `docs/uml/auth-sequence.md` et `docs/uml/protected-request.md` contiennent les diagrammes de séquence.
 
 ## Dépannage
 
-**`mvn` n'est pas reconnu** : installe Maven et rouvre PowerShell. **Java 8 apparaît** : installe/configure le JDK 21 avant de lancer le projet.
+**`mvn` n'est pas reconnu** : installer Maven et rouvrir PowerShell. **Java 8 apparaît** : installer ou configurer le JDK 21 avant de lancer le projet.
 
-**Erreur de connexion MySQL** : démarre Docker Desktop, exécute `docker compose ps`, et confirme que l'application pointe vers `lab4_db`. Ce labo ne doit pas utiliser la base du LAB3.
+**Erreur de connexion MySQL** : démarrer Docker Desktop, exécuter `docker compose ps` et confirmer que l'application pointe vers `lab4_db`. Ce laboratoire ne doit pas utiliser la base du LAB3.
 
-**Erreur `JWT_SECRET_BASE64`** : génère la clé avec les commandes de l'étape 4 dans le même terminal que `mvn spring-boot:run`.
+**Erreur `JWT_SECRET_BASE64`** : générer la clé avec les commandes de l'étape 4 dans le même terminal que `mvn spring-boot:run`.
 
-**Réponse 401** : reconnecte-toi dans Postman et vérifie que la collection utilise le jeton enregistré pour le bon compte. Un jeton expire ou est invalidé si la clé change.
+**Réponse 401** : se reconnecter dans Postman et vérifier que la collection utilise le jeton du bon compte. Un jeton expire ou devient invalide si la clé change.
 
 **Réponse 403** : le jeton est valide, mais l'action est réservée à l'autre rôle. Par exemple, la création d'un produit exige ADMIN.
 
@@ -267,4 +260,4 @@ GitHub héberge le code et exécute les tests. L'API n'est pas hébergée sur In
 
 ## Résultat attendu
 
-À la fin du LAB4, une personne peut créer un compte USER, recevoir un JWT après authentification, consulter l'API selon son rôle et créer uniquement ses propres commandes. Les opérations d'administration nécessitent un compte ADMIN créé localement de manière contrôlée.
+**Résultat attendu :** un compte USER peut être créé, recevoir un JWT après authentification, consulter l'API selon son rôle et créer uniquement ses propres commandes. Les opérations d'administration nécessitent un compte ADMIN créé localement de manière contrôlée.

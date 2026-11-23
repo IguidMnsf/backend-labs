@@ -9,8 +9,6 @@ import productRoutes from './routes/product.routes.js';
 
 dotenv.config();
 
-await import('../swagger.js');
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 const swaggerFile = new URL('./docs/swagger-output.json', import.meta.url);
