@@ -4,6 +4,8 @@ Ce projet réalise une API REST complète pour gérer des produits. Il suit une 
 
 Les données sont conservées **uniquement en mémoire**. Elles reviennent à leurs trois valeurs initiales au redémarrage du serveur.
 
+Le rapport est disponible dans [rapport-lab5.md](rapport-lab5.md) et [rapport-lab5.pdf](rapport-lab5.pdf).
+
 ## Ce qui est livré
 
 - API Express avec modules ECMAScript.

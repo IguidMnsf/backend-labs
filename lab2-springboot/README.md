@@ -4,6 +4,8 @@ API Java 21 / Spring Boot 3 construite selon les couches **Controller → Servic
 
 Le projet implémente aussi les exercices du sujet : recherche insensible à la casse par nom, exception métier lorsque la quantité dépasse 1000 et DTOs Java `record`.
 
+Le rapport est disponible dans [rapport-lab2.md](rapport-lab2.md) et [rapport-lab2.pdf](rapport-lab2.pdf).
+
 ## Prérequis
 
 - JDK 21

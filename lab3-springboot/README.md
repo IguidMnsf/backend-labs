@@ -4,6 +4,8 @@ Ce laboratoire fait évoluer l’API du LAB2 : les produits ne disparaissent plu
 
 Le parcours d’une requête est : **Controller → Service → Repository → Hibernate/JPA → MySQL**.
 
+Le rapport est disponible dans [rapport-lab3.md](rapport-lab3.md) et [rapport-lab3.pdf](rapport-lab3.pdf).
+
 ## Ce qui est inclus
 
 - Spring Boot 3, Java 21 et Maven.
