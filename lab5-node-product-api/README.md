@@ -41,14 +41,14 @@ Dans PowerShell :
 
 ```powershell
 git clone https://github.com/IguidMnsf/backend-labs.git
-cd backend-labs
+Set-Location .\backend-labs
 ```
 
-Si le dépôt existe déjà sur ton ordinateur, mets-le à jour :
+Pour mettre à jour un clone existant :
 
 ```powershell
-Set-Location "$HOME\.copilot\repos\backend-labs"
-git pull
+Set-Location "$HOME\backend-labs"
+git pull --ff-only
 ```
 
 Dans ce projet, les fichiers du LAB5 se trouvent dans :
@@ -59,14 +59,14 @@ lab5-node-product-api
 
 ## Installation des dépendances
 
-Depuis la racine du dépôt, ouvre le dossier du laboratoire :
+Depuis la racine du dépôt, accéder au dossier du laboratoire et installer les dépendances :
 
 ```powershell
 Set-Location .\lab5-node-product-api
-npm install
+npm ci
 ```
 
-La commande `npm install` installe :
+La commande `npm ci` installe les versions enregistrées dans `package-lock.json`, notamment :
 
 - `express` : serveur HTTP et routage.
 - `dotenv` : chargement du fichier `.env`.
@@ -75,17 +75,11 @@ La commande `npm install` installe :
 - `swagger-autogen` : génération du fichier OpenAPI.
 - `supertest` : tests HTTP automatisés.
 
-Pour reproduire exactement les versions enregistrées :
-
-```powershell
-npm ci
-```
-
 ## Configuration du port
 
 Le serveur utilise le port `3000` par défaut.
 
-Tu peux créer un fichier `.env` à partir de l'exemple :
+Pour créer un fichier `.env` à partir de l'exemple :
 
 ```powershell
 Copy-Item .env.example .env
@@ -97,7 +91,7 @@ Le contenu est :
 PORT=3000
 ```
 
-Pour utiliser un autre port, modifie uniquement la valeur dans `.env`, par exemple `PORT=4000`. Toutes les adresses locales devront alors utiliser `4000`.
+Pour utiliser un autre port, modifier uniquement la valeur dans `.env`, par exemple `PORT=4000`. Toutes les adresses locales devront alors utiliser `4000`.
 
 ## Lancer le serveur
 
@@ -109,32 +103,32 @@ npm run dev
 
 Le mode `dev` utilise `node --watch` : Express redémarre automatiquement après une modification.
 
-Tu peux aussi démarrer normalement :
+Le serveur peut également être démarré sans le mode de surveillance :
 
 ```powershell
 npm start
 ```
 
-Lorsque le serveur démarre, tu dois voir des messages indiquant les adresses de l'API et de Swagger.
+Lorsque le serveur démarre, des messages indiquent les adresses de l'API et de Swagger.
 
-Vérifie rapidement dans le navigateur :
+Vérifier le serveur dans un navigateur :
 
 - `http://localhost:3000/`
 - `http://localhost:3000/api/products`
 - `http://localhost:3000/api-docs`
 - `http://localhost:3000/api-docs.json`
 
-Pour arrêter le serveur, appuie sur `Ctrl+C` dans le terminal.
+Pour arrêter le serveur, utiliser `Ctrl+C` dans le terminal.
 
 ## Générer Swagger
 
-La documentation est générée automatiquement au démarrage. Tu peux aussi la régénérer explicitement :
+Le document OpenAPI est fourni dans `src/docs/swagger-output.json` et chargé au démarrage. Pour le régénérer après une modification des routes ou des modèles :
 
 ```powershell
 npm run swagger
 ```
 
-Cette commande crée `src/docs/swagger-output.json`. Swagger UI lit ensuite ce fichier dans `http://localhost:3000/api-docs`.
+Cette commande met à jour `src/docs/swagger-output.json`. L'interface Swagger lit ce fichier à l'adresse `http://localhost:3000/api-docs`.
 
 ## Endpoints disponibles
 
@@ -185,7 +179,7 @@ Les règles principales sont :
 8. Lance ensuite les autres requêtes dans l'ordre.
 9. Lance **10. Supprimer le produit créé** en dernier.
 
-Tu peux aussi utiliser directement Swagger UI :
+Swagger UI est également disponible à l'adresse :
 
 `http://localhost:3000/api-docs`
 
@@ -327,31 +321,31 @@ Les erreurs remontent vers le middleware centralisé `error.middleware.js`, ce q
 
 ### `npm` n'est pas reconnu
 
-1. Installe Node.js depuis https://nodejs.org/.
-2. Ferme tous les terminaux ouverts.
-3. Ouvre un nouveau PowerShell.
-4. Vérifie `node --version` et `npm --version`.
+1. Installer Node.js depuis https://nodejs.org/.
+2. Fermer les terminaux ouverts.
+3. Ouvrir une nouvelle fenêtre PowerShell.
+4. Vérifier `node --version` et `npm --version`.
 
 ### Le port 3000 est déjà utilisé
 
-Modifie `PORT` dans `.env` :
+Modifier `PORT` dans `.env` :
 
 ```dotenv
 PORT=4000
 ```
 
-Puis relance `npm run dev` et utilise `http://localhost:4000`.
+Puis relancer `npm run dev` et utiliser `http://localhost:4000`.
 
 ### Swagger ne s'affiche pas
 
-Exécute :
+Exécuter :
 
 ```powershell
 npm run swagger
 npm run dev
 ```
 
-Puis ouvre `http://localhost:3000/api-docs` ou vérifie `src/docs/swagger-output.json`.
+Puis ouvrir `http://localhost:3000/api-docs` ou vérifier `src/docs/swagger-output.json`.
 
 ### Les modifications disparaissent après redémarrage
 
@@ -359,27 +353,21 @@ C'est normal pour le LAB5 : le repository utilise un tableau JavaScript en mémo
 
 ## Résultat attendu
 
-À la fin du LAB5, tu disposes d'une API Node.js exécutable, d'une structure modulaire, d'une validation robuste, d'une gestion centralisée des erreurs et d'une documentation Swagger interactive. Tu peux présenter directement l'API, les tests, la collection Postman et cette documentation sur GitHub.
+**Résultat attendu :** une API Node.js exécutable, une structure modulaire, une validation des entrées, une gestion centralisée des erreurs et une documentation Swagger interactive. Le code, les tests, la collection Postman et la documentation sont consultables sur GitHub.
 
 ## Accéder au projet local et le lancer avec PowerShell
 
-Sur cet ordinateur, le dossier est :
-
-```text
-C:\Users\monsi\.copilot\repos\backend-labs\lab5-node-product-api
-```
-
-Ouvre PowerShell, mets le dépôt à jour, entre dans le LAB5 et installe les dépendances :
+Les commandes supposent un clone sous `$HOME\backend-labs`. Si le dépôt se trouve ailleurs, remplacer ce chemin par son emplacement réel. Pour un clone existant, ouvrir PowerShell, mettre le dépôt à jour, entrer dans le LAB5 et installer les dépendances :
 
 ```powershell
-Set-Location "$HOME\.copilot\repos\backend-labs"
-git pull
+Set-Location "$HOME\backend-labs"
+git pull --ff-only
 Set-Location .\lab5-node-product-api
 Get-Location
 npm ci
 ```
 
-Le chemin affiché doit finir par `backend-labs\lab5-node-product-api`. Si tu n'as pas le dépôt localement, clone-le :
+Si le dépôt n'est pas encore cloné :
 
 ```powershell
 Set-Location $HOME
@@ -388,7 +376,7 @@ Set-Location .\backend-labs\lab5-node-product-api
 npm ci
 ```
 
-Vérifie Node.js et npm, puis démarre le serveur :
+Vérifier Node.js et npm, puis démarrer le serveur :
 
 ```powershell
 node --version
@@ -396,27 +384,27 @@ npm --version
 npm run dev
 ```
 
-Garde le terminal ouvert. Quand le message du serveur apparaît, essaie `http://localhost:3000/api/products` dans ton navigateur. Pour arrêter le serveur, appuie sur `Ctrl+C`.
+Garder le terminal ouvert. Quand le serveur démarre, ouvrir `http://localhost:3000/api/products` dans un navigateur. Pour arrêter le serveur, utiliser `Ctrl+C`.
 
 ## Postman expliqué pas à pas
 
 Postman envoie une requête au serveur qui tourne dans le terminal. Il ne lance pas `npm run dev`.
 
-1. Ouvre Postman Desktop, clique **Import** → **Files**.
-2. Importe `C:\Users\monsi\.copilot\repos\backend-labs\lab5-node-product-api\postman\LAB5-Product-API.postman_collection.json`.
-3. Dans **Collections**, ouvre **LAB5 - API Produits Node.js Express** et vérifie que `baseUrl` vaut `http://localhost:3000`.
-4. Dans un terminal PowerShell séparé, démarre `npm run dev` et laisse-le ouvert.
-5. Dans Postman, ouvre **1. Vérifier le serveur**, puis clique **Send**. Le résultat attendu est `200 OK`.
-6. Ouvre **3. Créer un produit** et clique **Send**. Vérifie `201 Created` et le produit JSON dans l'onglet **Body**. L'identifiant est enregistré automatiquement.
-7. Envoie ensuite les requêtes de liste, lecture, PUT et PATCH. Les onglets **Body** et **Test Results** montrent respectivement la réponse et les assertions.
-8. Les requêtes d'erreur peuvent s'exécuter ensuite. Envoie **10. Supprimer le produit créé** tout à la fin.
-9. Pour exécuter toutes les requêtes dans l'ordre, clique **Run** sur la collection.
+1. Ouvrir Postman Desktop et cliquer sur **Import** → **Files**.
+2. Dans le clone local, ouvrir `lab5-node-product-api\postman` et importer `LAB5-Product-API.postman_collection.json`.
+3. Dans **Collections**, ouvrir **LAB5 - API Produits Node.js Express** et vérifier que `baseUrl` vaut `http://localhost:3000`.
+4. Dans un terminal PowerShell séparé, démarrer `npm run dev` et le laisser ouvert.
+5. Dans Postman, ouvrir **1. Vérifier le serveur**, puis cliquer sur **Send**. Le résultat attendu est `200 OK`.
+6. Ouvrir **3. Créer un produit** et cliquer sur **Send**. Vérifier `201 Created` et le JSON du produit dans l'onglet **Body**. L'identifiant est enregistré automatiquement.
+7. Envoyer ensuite les requêtes de liste, lecture, PUT et PATCH. Les onglets **Body** et **Test Results** montrent respectivement la réponse et les assertions.
+8. Les requêtes d'erreur peuvent être exécutées ensuite. Envoyer **10. Supprimer le produit créé** en dernier.
+9. Pour exécuter toutes les requêtes dans l'ordre, cliquer sur **Run** dans la collection.
 
-`localhost` signifie « mon ordinateur » : cette URL ne fonctionne que quand le serveur est démarré localement. Si Postman Web ne peut pas accéder à cette adresse, choisis l'agent Desktop/local ou utilise l'application Postman Desktop.
+`localhost` désigne l'ordinateur local : cette URL fonctionne uniquement lorsque le serveur est démarré. Si Postman Web n'accède pas à cette adresse, sélectionner l'agent Desktop/local ou utiliser Postman Desktop.
 
 ## Captures d'écran pour le professeur
 
-Appuie sur `Win + Shift + S`, sélectionne la zone, clique la notification de capture puis **Enregistrer sous**. Enregistre les images, par exemple dans `Documents\Captures-Labs\LAB5`.
+Utiliser `Win + Shift + S`, sélectionner la zone, puis choisir **Enregistrer sous** dans l'outil Capture d'écran. Enregistrer les images dans un dossier dédié, par exemple `Documents\Captures-Labs\LAB5`.
 
 **Captures en local :**
 
@@ -428,8 +416,8 @@ Appuie sur `Win + Shift + S`, sélectionne la zone, clique la notification de ca
 
 **Captures du projet publié sur GitHub :**
 
-1. Ouvre [les fichiers LAB5 sur GitHub](https://github.com/IguidMnsf/backend-labs/tree/main/lab5-node-product-api).
-2. Capture le README et la liste des fichiers du dossier.
-3. Dans **Actions**, ouvre un run récent et capture le job `lab5-node` terminé avec succès.
+1. Ouvrir [les fichiers LAB5 sur GitHub](https://github.com/IguidMnsf/backend-labs/tree/main/lab5-node-product-api).
+2. Capturer le README et la liste des fichiers du dossier.
+3. Dans **Actions**, ouvrir un run récent et capturer le job `lab5-node` terminé avec succès.
 
-La publication GitHub et la réussite des tests ne mettent pas l'API en ligne. L'API est exécutée sur ton PC et utilise `localhost:3000`.
+La publication GitHub et la réussite des tests ne mettent pas l'API en ligne. L'API s'exécute localement et utilise `localhost:3000`.
